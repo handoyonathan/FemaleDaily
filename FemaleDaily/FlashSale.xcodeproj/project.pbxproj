@@ -7,32 +7,19 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		274012462E2DCE24009E5163 /* FemaleDaily.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FemaleDaily.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		901A8C9F2E2A07C900217AC5 /* FlashSale.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlashSale.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		274012532E2DCE26009E5163 /* Exceptions for "FemaleDaily" folder in "FemaleDaily" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 274012452E2DCE24009E5163 /* FemaleDaily */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		274012482E2DCE24009E5163 /* FemaleDaily */ = {
+		901A8CA12E2A07C900217AC5 /* FlashSale */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				274012532E2DCE26009E5163 /* Exceptions for "FemaleDaily" folder in "FemaleDaily" target */,
-			);
-			path = FemaleDaily;
+			path = FlashSale;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		274012432E2DCE24009E5163 /* Frameworks */ = {
+		901A8C9C2E2A07C900217AC5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -42,18 +29,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2740123D2E2DCE24009E5163 = {
+		901A8C962E2A07C900217AC5 = {
 			isa = PBXGroup;
 			children = (
-				274012482E2DCE24009E5163 /* FemaleDaily */,
-				274012472E2DCE24009E5163 /* Products */,
+				901A8CA12E2A07C900217AC5 /* FlashSale */,
+				901A8CA02E2A07C900217AC5 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		274012472E2DCE24009E5163 /* Products */ = {
+		901A8CA02E2A07C900217AC5 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				274012462E2DCE24009E5163 /* FemaleDaily.app */,
+				901A8C9F2E2A07C900217AC5 /* FlashSale.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -61,64 +48,64 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		274012452E2DCE24009E5163 /* FemaleDaily */ = {
+		901A8C9E2E2A07C900217AC5 /* FlashSale */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 274012542E2DCE26009E5163 /* Build configuration list for PBXNativeTarget "FemaleDaily" */;
+			buildConfigurationList = 901A8CAD2E2A07CA00217AC5 /* Build configuration list for PBXNativeTarget "FlashSale" */;
 			buildPhases = (
-				274012422E2DCE24009E5163 /* Sources */,
-				274012432E2DCE24009E5163 /* Frameworks */,
-				274012442E2DCE24009E5163 /* Resources */,
+				901A8C9B2E2A07C900217AC5 /* Sources */,
+				901A8C9C2E2A07C900217AC5 /* Frameworks */,
+				901A8C9D2E2A07C900217AC5 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				274012482E2DCE24009E5163 /* FemaleDaily */,
+				901A8CA12E2A07C900217AC5 /* FlashSale */,
 			);
-			name = FemaleDaily;
+			name = FlashSale;
 			packageProductDependencies = (
 			);
-			productName = FemaleDaily;
-			productReference = 274012462E2DCE24009E5163 /* FemaleDaily.app */;
+			productName = FlashSale;
+			productReference = 901A8C9F2E2A07C900217AC5 /* FlashSale.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		2740123E2E2DCE24009E5163 /* Project object */ = {
+		901A8C972E2A07C900217AC5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1630;
-				LastUpgradeCheck = 1630;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
 				TargetAttributes = {
-					274012452E2DCE24009E5163 = {
-						CreatedOnToolsVersion = 16.3;
+					901A8C9E2E2A07C900217AC5 = {
+						CreatedOnToolsVersion = 16.2;
 					};
 				};
 			};
-			buildConfigurationList = 274012412E2DCE24009E5163 /* Build configuration list for PBXProject "FemaleDaily" */;
+			buildConfigurationList = 901A8C9A2E2A07C900217AC5 /* Build configuration list for PBXProject "FlashSale" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = 2740123D2E2DCE24009E5163;
+			mainGroup = 901A8C962E2A07C900217AC5;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 274012472E2DCE24009E5163 /* Products */;
+			productRefGroup = 901A8CA02E2A07C900217AC5 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				274012452E2DCE24009E5163 /* FemaleDaily */,
+				901A8C9E2E2A07C900217AC5 /* FlashSale */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		274012442E2DCE24009E5163 /* Resources */ = {
+		901A8C9D2E2A07C900217AC5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -128,7 +115,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		274012422E2DCE24009E5163 /* Sources */ = {
+		901A8C9B2E2A07C900217AC5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -138,67 +125,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		274012552E2DCE26009E5163 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = FemaleDaily/FemaleDaily.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ASV58A83FA;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = FemaleDaily/Info.plist;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = name.yeha.FemaleDaily;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		274012562E2DCE26009E5163 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = FemaleDaily/FemaleDaily.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ASV58A83FA;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = FemaleDaily/Info.plist;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = name.yeha.FemaleDaily;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		274012572E2DCE26009E5163 /* Debug */ = {
+		901A8CAB2E2A07CA00217AC5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -233,7 +160,6 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = ASV58A83FA;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -251,7 +177,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -262,7 +188,7 @@
 			};
 			name = Debug;
 		};
-		274012582E2DCE26009E5163 /* Release */ = {
+		901A8CAC2E2A07CA00217AC5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -297,7 +223,6 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = ASV58A83FA;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -309,7 +234,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -319,28 +244,86 @@
 			};
 			name = Release;
 		};
+		901A8CAE2E2A07CA00217AC5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"FlashSale/Preview Content\"";
+				DEVELOPMENT_TEAM = 592CDZA4F5;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = name.davenkarim.FlashSale;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		901A8CAF2E2A07CA00217AC5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"FlashSale/Preview Content\"";
+				DEVELOPMENT_TEAM = 592CDZA4F5;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = name.davenkarim.FlashSale;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		274012412E2DCE24009E5163 /* Build configuration list for PBXProject "FemaleDaily" */ = {
+		901A8C9A2E2A07C900217AC5 /* Build configuration list for PBXProject "FlashSale" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				274012572E2DCE26009E5163 /* Debug */,
-				274012582E2DCE26009E5163 /* Release */,
+				901A8CAB2E2A07CA00217AC5 /* Debug */,
+				901A8CAC2E2A07CA00217AC5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		274012542E2DCE26009E5163 /* Build configuration list for PBXNativeTarget "FemaleDaily" */ = {
+		901A8CAD2E2A07CA00217AC5 /* Build configuration list for PBXNativeTarget "FlashSale" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				274012552E2DCE26009E5163 /* Debug */,
-				274012562E2DCE26009E5163 /* Release */,
+				901A8CAE2E2A07CA00217AC5 /* Debug */,
+				901A8CAF2E2A07CA00217AC5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 2740123E2E2DCE24009E5163 /* Project object */;
+	rootObject = 901A8C972E2A07C900217AC5 /* Project object */;
 }
