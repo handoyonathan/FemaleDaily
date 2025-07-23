@@ -23,8 +23,6 @@ struct QueueEntry: Identifiable, Equatable {
             number = record["number"] as? Int ?? 0
             timestamp = record["timestamp"] as? Date
             switch status.lowercased() {
-            case "in store":
-                statusColor = .green
             case "queueing":
                 statusColor = .orange
             case "skipped":

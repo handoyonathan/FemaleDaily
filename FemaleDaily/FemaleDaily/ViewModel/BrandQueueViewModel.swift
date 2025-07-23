@@ -22,7 +22,7 @@ class BrandQueueViewModel: ObservableObject {
 
     var hasJoinedQueue: Bool {
         guard let username = authViewModel.userName else { return false }
-        return queueList.contains { $0.username == username }
+        return queueList.contains { $0.username == username && $0.status.lowercased() == "queueing" }
     }
 
     func fetchQueue(completion: (() -> Void)? = nil) {
@@ -58,7 +58,7 @@ class BrandQueueViewModel: ObservableObject {
         }
     }
 
-    func joinQueue(completion: (() -> Void)? = nil, attempt: Int = 1, maxAttempts: Int = 3) {
+    func joinQueue(allowRejoin: Bool = false, completion: (() -> Void)? = nil, attempt: Int = 1, maxAttempts: Int = 3) {
         guard let username = authViewModel.userName else {
             DispatchQueue.main.async {
                 self.errorMessage = "User not logged in"
@@ -67,7 +67,7 @@ class BrandQueueViewModel: ObservableObject {
             }
             return
         }
-        if hasJoinedQueue {
+        if hasJoinedQueue && !allowRejoin {
             DispatchQueue.main.async {
                 self.errorMessage = "You have already joined the queue"
                 print("Join queue failed: User \(username) already in queue")
@@ -100,7 +100,7 @@ class BrandQueueViewModel: ObservableObject {
                                     let existingRecords = try checkQueryResult.matchResults.map { try $0.1.get() }
                                     if !existingRecords.isEmpty && attempt <= maxAttempts {
                                         print("Number \(nextNumber) already taken, retrying attempt \(attempt)")
-                                        self.joinQueue(completion: completion, attempt: attempt + 1, maxAttempts: maxAttempts)
+                                        self.joinQueue(allowRejoin: allowRejoin, completion: completion, attempt: attempt + 1, maxAttempts: maxAttempts)
                                         return
                                     }
                                     self.database.save(record) { savedRecord, error in
@@ -152,7 +152,10 @@ class BrandQueueViewModel: ObservableObject {
             }
             return
         }
-        guard let userEntry = queueList.first(where: { $0.username == username }) else {
+        // Find the most recent entry for the user based on number or timestamp
+        guard let userEntry = queueList
+            .filter({ $0.username == username })
+            .max(by: { ($0.number, $0.timestamp ?? Date.distantPast) < ($1.number, $1.timestamp ?? Date.distantPast) }) else {
             DispatchQueue.main.async {
                 self.errorMessage = "User not found in queue"
                 print("Cancel queue failed: User \(username) not in queue")
@@ -178,28 +181,37 @@ class BrandQueueViewModel: ObservableObject {
     }
 
     func setupSubscription() {
-        database.fetch(withSubscriptionID: subscriptionID) { subscription, error in
-            if subscription != nil {
-                DispatchQueue.main.async {
-                    print("Subscription already exists: \(self.subscriptionID)")
+        CKContainer.default().accountStatus { status, error in
+            DispatchQueue.main.async {
+                if status != .available {
+                    self.errorMessage = "Please sign in to iCloud to enable queue updates"
+                    print("iCloud account not available: \(status.rawValue), error: \(error?.localizedDescription ?? "None")")
+                    return
                 }
-                return
-            }
-            if let error = error {
-                DispatchQueue.main.async {
-                    self.errorMessage = "Failed to check subscription: \(error.localizedDescription)"
-                    print("Failed to check subscription: \(error.localizedDescription)")
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        self.createSubscription(attempt: 1)
+                self.database.fetch(withSubscriptionID: self.subscriptionID) { subscription, error in
+                    if subscription != nil {
+                        DispatchQueue.main.async {
+                            print("Subscription already exists: \(self.subscriptionID)")
+                        }
+                        return
                     }
+                    if let error = error {
+                        DispatchQueue.main.async {
+                            self.errorMessage = "Failed to check subscription: \(error.localizedDescription)"
+                            print("Failed to check subscription: \(error.localizedDescription)")
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                self.createSubscription(attempt: 1)
+                            }
+                        }
+                        return
+                    }
+                    self.createSubscription(attempt: 1)
                 }
-                return
             }
-            self.createSubscription(attempt: 1)
         }
     }
 
-    private func createSubscription(attempt: Int = 1) {
+    private func createSubscription(attempt: Int = 1, maxAttempts: Int = 5) {
         let subscription = CKQuerySubscription(
             recordType: "QueueEntry",
             predicate: NSPredicate(value: true),
@@ -214,12 +226,12 @@ class BrandQueueViewModel: ObservableObject {
         database.save(subscription) { _, error in
             DispatchQueue.main.async {
                 if let error = error {
-                    self.errorMessage = error.localizedDescription
+                    self.errorMessage = "Failed to save subscription (attempt \(attempt)): \(error.localizedDescription)"
                     print("Failed to save subscription (attempt \(attempt)): \(error.localizedDescription)")
-                    if attempt <= 3 {
+                    if attempt <= maxAttempts {
                         let delay = pow(2.0, Double(attempt)) * 2.0
                         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                            self.createSubscription(attempt: attempt + 1)
+                            self.createSubscription(attempt: attempt + 1, maxAttempts: maxAttempts)
                         }
                     }
                 } else {

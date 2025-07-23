@@ -14,17 +14,20 @@ class LoginViewModel: ObservableObject {
     @Published var isLoggedIn = false
     @Published var userName: String?
     @Published var errorMessage: String?
+    @Published var isAdmin = false
 
     func login(email: String, password: String) {
         let emailLowercased = email.lowercased()
-        if emailLowercased == password.lowercased(), emailLowercased.hasPrefix("user") {
+        if emailLowercased == password.lowercased(), (emailLowercased.hasPrefix("user") || emailLowercased.hasPrefix("admin")) {
             self.userName = emailLowercased
+            self.isAdmin = emailLowercased.hasPrefix("admin")
             self.isLoggedIn = true
             self.errorMessage = nil
-            print("Login success: \(emailLowercased)")
+            print("Login success: \(emailLowercased), isAdmin: \(self.isAdmin)")
         } else {
-            self.errorMessage = "Invalid credentials"
+            self.errorMessage = "Invalid credentials. Username must start with 'user' or 'admin' and match password."
             self.isLoggedIn = false
+            self.isAdmin = false
             print("Login failed for: \(emailLowercased)")
         }
     }
@@ -69,14 +72,22 @@ struct LoginView: View {
             }
             .padding()
             .navigationDestination(isPresented: $authViewModel.isLoggedIn) {
-                HomeView()
-                    .environmentObject(authViewModel)
+                if authViewModel.isAdmin {
+                                    AdminView(authViewModel: authViewModel)
+                                        .environmentObject(authViewModel)
+                                } else {
+                                    HomeView()
+                                        .environmentObject(authViewModel)
+                                }
             }
         }
     }
 }
 
 
+
+import SwiftUI
+import CloudKit
 
 struct BrandQueueView: View {
     @StateObject private var viewModel: BrandQueueViewModel
@@ -90,9 +101,9 @@ struct BrandQueueView: View {
     var body: some View {
         VStack(spacing: 0) {
             TabView {
-                Color.gray.overlay(Text("Catalognya").foregroundColor(.white))
-                Color.gray
-                Color.gray
+                Color.gray.overlay(Text("Catalog 1").foregroundColor(.white))
+                Color.gray.overlay(Text("Catalog 2").foregroundColor(.white))
+                Color.gray.overlay(Text("Catalog 3").foregroundColor(.white))
             }
             .frame(height: 200)
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
@@ -129,9 +140,10 @@ struct BrandQueueView: View {
                         ForEach(viewModel.queueList) { entry in
                             let isCurrentUser = entry.username == authViewModel.userName
                             let cardBackgroundColor = {
-                                if isCurrentUser {
+                                if entry.status.lowercased() == "done" {
+                                    return Color.gray.opacity(0.3) // Gray for done entries
+                                } else if isCurrentUser {
                                     switch entry.status.lowercased() {
-                                    case "in store": return Color.green.opacity(0.2)
                                     case "queueing": return Color.orange.opacity(0.2)
                                     case "skipped": return Color.red.opacity(0.2)
                                     default: return Color.white
@@ -168,34 +180,36 @@ struct BrandQueueView: View {
 
             Spacer()
 
-            VStack(spacing: 8) {
-                Button(viewModel.hasJoinedQueue ? "Cancel Queue" : "Join Queue") {
-                    guard !isLoading else { return } // Prevent button spam
-                    isLoading = true // Show loading immediately
-                    if viewModel.hasJoinedQueue {
-                        viewModel.cancelQueue {
-                            print("Cancel queue completed, waiting for queueList update")
-                        }
-                    } else {
-                        viewModel.joinQueue {
-                            print("Join queue completed, waiting for queueList update")
+            if !isCurrentUserDone {
+                VStack(spacing: 8) {
+                    Button(isCurrentUserQueueing ? "Cancel Queue" : "Join Queue") {
+                        guard !isLoading else { return } // Prevent button spam
+                        isLoading = true // Show loading immediately
+                        if isCurrentUserQueueing {
+                            viewModel.cancelQueue {
+                                print("Cancel queue completed, waiting for queueList update")
+                            }
+                        } else {
+                            viewModel.joinQueue(allowRejoin: true) {
+                                print("Join queue completed, waiting for queueList update")
+                            }
                         }
                     }
-                }
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(viewModel.hasJoinedQueue ? Color.gray : Color.red)
-                .cornerRadius(10)
-                .disabled(!authViewModel.isLoggedIn || isLoading)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(isCurrentUserQueueing ? Color.gray : Color.red)
+                    .cornerRadius(10)
+                    .disabled(!authViewModel.isLoggedIn || isLoading)
 
-                Text("Disclaimer: After 3 missed calls, your turn will be passed.")
-                    .font(.footnote)
-                    .foregroundColor(.gray)
-                    .multilineTextAlignment(.center)
+                    Text("Disclaimer: After 3 missed calls, your turn will be passed.")
+                        .font(.footnote)
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                }
+                .padding()
+                .background(Color.white)
             }
-            .padding()
-            .background(Color.white)
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Skintific")
@@ -215,6 +229,16 @@ struct BrandQueueView: View {
                 print("fetchQueue completed after QueueUpdated, queueList count: \(viewModel.queueList.count)")
             }
         }
+    }
+
+    private var isCurrentUserDone: Bool {
+        guard let username = authViewModel.userName else { return false }
+        return viewModel.queueList.contains { $0.username == username && $0.status.lowercased() == "done" }
+    }
+
+    private var isCurrentUserQueueing: Bool {
+        guard let username = authViewModel.userName else { return false }
+        return viewModel.queueList.contains { $0.username == username && $0.status.lowercased() == "queueing" }
     }
 }
 
