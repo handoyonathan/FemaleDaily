@@ -34,22 +34,22 @@ struct FlashSaleItemView: View {
                 
                 HStack {
                     Text("Jumlah Antrian: 50")
-                        .font(.caption)
+                        .font(.footnote)
                         .fontWeight(.medium)
                         .foregroundColor(.red)
-                        .padding(3)
+                        .padding(5)
                         .background(
-                            RoundedRectangle(cornerRadius: 5)
+                            RoundedRectangle(cornerRadius: 3)
                                 .stroke(Color.red, lineWidth: 0.7)
                         )
                     
                     Text("Ambil Antrian >")
-                        .font(.caption)
+                        .font(.footnote)
                         .fontWeight(.medium)
                         .foregroundColor(.red)
-                        .padding(3)
+                        .padding(5)
                         .background(
-                            RoundedRectangle(cornerRadius: 5)
+                            RoundedRectangle(cornerRadius: 3)
                                 .stroke(Color.red, lineWidth: 0.7)
                         )
                 }

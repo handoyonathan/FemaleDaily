@@ -31,26 +31,41 @@ struct BrandDetailView: View {
                 }
                 .padding()
                 
-                // Image Slider
-                ImageSlider(images: viewModel.brand.images, currentIndex: $viewModel.currentImageIndex)
-                    .frame(height: 250)
-                
-                // Flash Sale Schedule
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("FLASH SALE SCHEDULE")
+                //Header
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.white)
+//                        .opacity(0.1)
+                        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+                    VStack(alignment: .leading, spacing: 20){
+                        // Image Slider
+                        ImageSlider(images: viewModel.brand.images, currentIndex: $viewModel.currentImageIndex)
+                            .frame(height: 250)
+                        
+                        // Flash Sale Schedule
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("FLASH SALE SCHEDULE")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                            Text("Description. Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                        }
+                        .padding(.horizontal)
+                        .padding(.bottom)
+                    }
+                }
+                // Katalog Produk
+                HStack() {
+                    Spacer()
+                    
+                    Text("KATALOG FLASH SALE")
                         .font(.headline)
                         .fontWeight(.bold)
-                    Text("Description. Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
+                        .padding(.horizontal)
+                    
+                    Spacer()
                 }
-                .padding(.horizontal)
-                
-                // Katalog Produk
-                Text("KATALOG FLASH SALE")
-                    .font(.headline)
-                    .fontWeight(.bold)
-                    .padding(.horizontal)
                 
                 ProductGrid(products: viewModel.brand.products)
                     .padding(.horizontal)

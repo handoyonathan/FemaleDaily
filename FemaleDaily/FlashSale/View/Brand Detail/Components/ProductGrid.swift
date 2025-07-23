@@ -39,9 +39,9 @@ struct ProductGrid: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding(8)
-                .background(Color.white)
-                .cornerRadius(8)
-                .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+//                .background(Color.white)
+//                .cornerRadius(8)
+//                .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
             }
         }
         .padding(.horizontal, 16)
