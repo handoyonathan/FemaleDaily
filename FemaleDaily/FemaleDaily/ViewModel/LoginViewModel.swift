@@ -5,6 +5,8 @@
 //  Created by Yonathan Handoyo on 24/07/25.
 //
 
+import SwiftUI
+
 class LoginViewModel: ObservableObject {
     static let shared = LoginViewModel()
     

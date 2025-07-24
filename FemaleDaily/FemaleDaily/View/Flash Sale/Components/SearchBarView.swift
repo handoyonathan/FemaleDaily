@@ -9,16 +9,10 @@ import SwiftUI
 
 struct SearchBarView: View {
     @Binding var searchText: String
-    
+    @EnvironmentObject var queueService: QueueService
+
     var body: some View {
-        HStack {
-            // Tombol Back
-            Image(systemName: "arrow.left")
-                .foregroundColor(.red)
-                .padding(.leading, 10)
-                .padding(.trailing, 3)
-                .fontWeight(.medium)
-            
+        HStack(spacing: 8) {
             // Search Box
             HStack {
                 Image(systemName: "magnifyingglass")
@@ -29,30 +23,37 @@ struct SearchBarView: View {
                     .disableAutocorrection(true)
                     .font(.subheadline)
             }
-            // atribut buat di dalem search boxnya
             .padding(.horizontal, 10)
             .padding(.vertical, 10)
             .background(
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(Color.gray, lineWidth: 1)
             )
-            // buat diluar search boxnya
-            .padding(.trailing)
-            .padding(.top, 5)
-            .padding(.bottom, 15)
-            
-            // Simbol Love
-//            Image(systemName: "heart")
-//                .padding(.trailing, 18)
-//                .padding(.leading, 5)
-//                .foregroundColor(.red)
-//                .fontWeight(.medium)
+
+            // Navigation to MyQueueView
+            NavigationLink(destination: MyQueueView()
+                .environmentObject(queueService)
+                .onAppear {
+                    print("Navigated to MyQueueView from person icon")
+                }) {
+                Image(systemName: "person")
+                    .foregroundColor(.red)
+                    .frame(width: 40, height: 40)
+                    .background(Color.white)
+                    .cornerRadius(8)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray, lineWidth: 1)
+                    )
+            }
         }
+        .padding(.horizontal)
+        .padding(.top, 5)
+        .padding(.bottom, 15)
     }
 }
 
-struct SearchBarView_Previews: PreviewProvider {
-    static var previews: some View {
-        SearchBarView(searchText: .constant(""))
-    }
+#Preview {
+    SearchBarView(searchText: .constant(""))
+        .environmentObject(QueueService.shared)
 }

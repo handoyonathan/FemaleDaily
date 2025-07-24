@@ -8,22 +8,17 @@
 import SwiftUI
 
 struct MapModalityView: View {
-    @State private var offsetY: CGFloat = UIScreen.main.bounds.height * 0.6
-    @GestureState private var dragOffset = CGSize.zero
-    @Binding var showModal: Bool
     let landmark: Landmark
     let brands: [Brand]
 
     var body: some View {
-        let filteredBrands = brands.filter { $0.landmarkBrand == landmark.name }
-
         VStack(spacing: 0) {
             // Grab indicator
-            Capsule()
-                .frame(width: 56, height: 4)
-                .foregroundColor(.gray)
-                .padding(.top, 10)
-                .padding(.bottom, 5)
+//            Capsule()
+//                .frame(width: 56, height: 4)
+//                .foregroundColor(.gray)
+//                .padding(.top, 10)
+//                .padding(.bottom, 5)
 
             // Header
             HStack {
@@ -43,7 +38,7 @@ struct MapModalityView: View {
             }
 
             // Brand list
-            if filteredBrands.isEmpty {
+            if brands.isEmpty {
                 Text("No brands found for this booth.")
                     .font(.system(size: 16))
                     .foregroundColor(.gray)
@@ -55,45 +50,14 @@ struct MapModalityView: View {
             Spacer()
         }
         .frame(maxWidth: .infinity)
-        .frame(height: UIScreen.main.bounds.height * 0.85)
-        .background(Color.white.opacity(0.95))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: Color.black.opacity(0.25), radius: 5, x: 0, y: -5)
-        .offset(y: max(0, offsetY + dragOffset.height))
-        .onChange(of: showModal) {
-            if showModal {
-                offsetY = UIScreen.main.bounds.height * 0.6
-            }
-        }
-        .gesture(
-            DragGesture()
-                .updating($dragOffset) { value, state, _ in
-                    state = value.translation
-                }
-                .onEnded { value in
-                    let height = UIScreen.main.bounds.height
-                    let newOffset = offsetY + value.translation.height
-
-                    withAnimation {
-                        if newOffset > height * 0.85 {
-                            showModal = false
-                            offsetY = height * 0.6
-                        } else if newOffset < height * 0.25 {
-                            offsetY = 80
-                        } else if newOffset > height * 0.6 {
-                            offsetY = height * 0.75
-                        } else {
-                            offsetY = height * 0.4
-                        }
-                    }
-                }
-        )
+//        .background(Color.white.opacity(0.95))
+//        .clipShape(RoundedRectangle(cornerRadius: 16))
+//        .shadow(color: Color.black.opacity(0.25), radius: 5, x: 0, y: -5)
     }
 }
 
 #Preview {
     MapModalityView(
-        showModal: .constant(true),
         landmark: Landmark(
             name: "Booth 38",
             imageName: "MakeupLM",

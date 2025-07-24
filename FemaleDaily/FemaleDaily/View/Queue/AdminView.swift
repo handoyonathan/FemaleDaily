@@ -109,6 +109,7 @@ struct AdminView: View {
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Skintific")
+//        .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             isLoading = true

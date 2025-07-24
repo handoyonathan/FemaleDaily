@@ -12,6 +12,7 @@ import UserNotifications
 
 struct BrandQueueView: View {
     @EnvironmentObject private var queueService: QueueService
+    @Environment(\.presentationMode) var presentationMode
     @State private var isLoading = false
     
     var body: some View {
@@ -131,6 +132,17 @@ struct BrandQueueView: View {
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Skintific")
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.black)
+                }
+            }
+        }
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             isLoading = true

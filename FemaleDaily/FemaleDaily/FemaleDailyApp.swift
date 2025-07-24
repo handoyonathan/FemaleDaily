@@ -11,7 +11,6 @@ import CloudKit
 import UserNotifications
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
             if let error = error {
@@ -49,12 +48,13 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct FemaleDailyApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var queueService = QueueService.shared
+    @ObservedObject private var loginViewModel = LoginViewModel.shared
 
     var body: some Scene {
         WindowGroup {
             LoginView()
                 .environmentObject(queueService)
-                .onChange(of: LoginViewModel.shared.isLoggedIn) { isLoggedIn in
+                .onChange(of: loginViewModel.isLoggedIn) { isLoggedIn in
                     if isLoggedIn {
                         queueService.fetchQueue {
                             print("Initial queue fetch completed after login")

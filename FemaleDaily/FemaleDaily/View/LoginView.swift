@@ -13,6 +13,7 @@ struct LoginView: View {
     @State private var password = ""
     @Environment(\.colorScheme) var colorScheme
     @State private var isLoggedIn = false
+    @ObservedObject private var viewModel = LoginViewModel.shared
 
     var body: some View {
         NavigationStack {
@@ -21,7 +22,7 @@ struct LoginView: View {
                     .font(.title)
                     .fontWeight(.bold)
                 
-                if let errorMessage = LoginViewModel.shared.errorMessage {
+                if let errorMessage = viewModel.errorMessage {
                     Text(errorMessage)
                         .foregroundColor(.red)
                         .font(.footnote)
@@ -36,9 +37,9 @@ struct LoginView: View {
                     .textFieldStyle(.roundedBorder)
                 
                 Button("Login") {
-                    LoginViewModel.shared.login(email: email, password: password)
-                    print("Login button pressed, isLoggedIn: \(LoginViewModel.shared.isLoggedIn), isAdmin: \(LoginViewModel.shared.isAdmin)")
-                    isLoggedIn = LoginViewModel.shared.isLoggedIn
+                    viewModel.login(email: email, password: password)
+                    print("Login button pressed, isLoggedIn: \(viewModel.isLoggedIn), isAdmin: \(viewModel.isAdmin)")
+                    isLoggedIn = viewModel.isLoggedIn
                     print("Set isLoggedIn to \(isLoggedIn)")
                 }
                 .frame(maxWidth: .infinity)
@@ -49,20 +50,21 @@ struct LoginView: View {
             }
             .padding()
             .navigationDestination(isPresented: $isLoggedIn) {
-                if LoginViewModel.shared.isAdmin {
-                    AdminView()
-                        .environmentObject(QueueService.shared)
-                        .onAppear {
-                            print("Navigated to AdminView")
-                        }
-                } else {
-                    FlashSaleView()
-                        .environmentObject(QueueService.shared)
-                        .onAppear {
-                            print("Navigated to FlashSaleView")
-                        }
-                }
+                destinationView()
             }
+        }
+    }
+
+    @ViewBuilder
+    private func destinationView() -> some View {
+        if viewModel.isAdmin {
+            AdminView()
+                .environmentObject(QueueService.shared)
+                .onAppear {
+                    print("Navigated to AdminView")
+                }
+        } else {
+            StaticMapView()
         }
     }
 }

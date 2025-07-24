@@ -13,6 +13,7 @@ struct FlashSaleView: View {
     @State private var isShowingDetail = false
     @State private var selectedBrandDetail: BrandDetail?
     @EnvironmentObject var queueService: QueueService
+    @Environment(\.presentationMode) var presentationMode
 
     init() {
         let dates = FlashSaleViewModel().getAvailableDates()
@@ -50,7 +51,18 @@ struct FlashSaleView: View {
                 )
             }
         }
+        .navigationTitle("Flash Sale")
         .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.black)
+                }
+            }
+        }
         .navigationDestination(isPresented: $isShowingDetail) {
             if let brandDetail = selectedBrandDetail {
                 BrandDetailView(brand: brandDetail)
