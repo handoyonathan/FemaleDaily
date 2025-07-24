@@ -9,16 +9,11 @@ import SwiftUI
 import CloudKit
 
 struct AdminView: View {
-    @StateObject private var viewModel: AdminViewModel
-    @EnvironmentObject private var authViewModel: LoginViewModel
+    @EnvironmentObject private var queueService: QueueService
     @State private var isLoading = false
     @State private var showConfirmation = false
     @State private var selectedEntry: QueueEntry?
     @State private var actionType: String = ""
-
-    init(authViewModel: LoginViewModel) {
-        _viewModel = StateObject(wrappedValue: AdminViewModel(authViewModel: authViewModel))
-    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -26,13 +21,13 @@ struct AdminView: View {
                 Text("Queue")
                     .font(.headline)
                 Spacer()
-                Text("\(viewModel.queueList.count) org")
+                Text("\(queueService.queueList.count) org")
                     .foregroundColor(.gray)
                     .font(.subheadline)
             }
             .padding()
 
-            if let errorMessage = viewModel.errorMessage {
+            if let errorMessage = queueService.errorMessage {
                 Text(errorMessage)
                     .foregroundColor(.red)
                     .font(.footnote)
@@ -40,10 +35,10 @@ struct AdminView: View {
                     .padding()
             }
 
-            if isLoading && viewModel.queueList.isEmpty {
+            if isLoading && queueService.queueList.isEmpty {
                 ProgressView()
                     .padding()
-            } else if viewModel.queueList.isEmpty {
+            } else if queueService.queueList.isEmpty {
                 Text("No Queue")
                     .font(.title3)
                     .foregroundColor(.gray)
@@ -51,7 +46,7 @@ struct AdminView: View {
             } else {
                 ScrollView {
                     VStack(spacing: 8) {
-                        ForEach(viewModel.queueList) { entry in
+                        ForEach(queueService.queueList) { entry in
                             let cardBackgroundColor = {
                                 switch entry.status.lowercased() {
                                 case "done": return Color.green.opacity(0.2) // Pastel green for done
@@ -103,7 +98,7 @@ struct AdminView: View {
                         }
                     }
                     .padding()
-                    .onChange(of: viewModel.queueList) { newQueueList in
+                    .onChange(of: queueService.queueList) { newQueueList in
                         print("UI rendering queueList with \(newQueueList.count) entries: \(newQueueList.map { "\($0.number): \($0.username)" })")
                         isLoading = false
                     }
@@ -114,10 +109,11 @@ struct AdminView: View {
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Skintific")
+//        .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             isLoading = true
-            viewModel.fetchQueue {
+            queueService.fetchQueue {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     isLoading = false
                 }
@@ -126,8 +122,9 @@ struct AdminView: View {
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("QueueUpdated"))) { _ in
             print("QueueUpdated notification received at \(Date().formatted())")
             isLoading = true
-            viewModel.fetchQueue {
-                print("fetchQueue completed after QueueUpdated, queueList count: \(viewModel.queueList.count)")
+            queueService.fetchQueue {
+                print("fetchQueue completed after QueueUpdated, queueList count: \(queueService.queueList.count)")
+                isLoading = false
             }
         }
         .alert(isPresented: $showConfirmation) {
@@ -136,7 +133,7 @@ struct AdminView: View {
                 message: Text("Are you sure you want to mark \(selectedEntry?.username ?? "") as \(actionType)?"),
                 primaryButton: .default(Text("Confirm")) {
                     if let entry = selectedEntry {
-                        viewModel.updateStatus(for: entry, to: actionType) {
+                        queueService.updateStatus(for: entry, to: actionType) {
                             isLoading = true
                         }
                     }
@@ -145,4 +142,9 @@ struct AdminView: View {
             )
         }
     }
+}
+
+#Preview {
+    AdminView()
+        .environmentObject(QueueService.shared)
 }
