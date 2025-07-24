@@ -6,48 +6,39 @@
 //
 
 import SwiftUI
+import CloudKit
 
 struct BrandDetailView: View {
+    let brand: BrandDetail
+    @StateObject private var viewModel: BrandDetailViewModel
+    @State private var isShowingQueue = false
+    @EnvironmentObject var queueService: QueueService
     @Environment(\.presentationMode) var presentationMode
-    @StateObject var viewModel: BrandDetailViewModel
-    
+
+    init(brand: BrandDetail) {
+        self.brand = brand
+        _viewModel = StateObject(wrappedValue: BrandDetailViewModel(brand: brand))
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // Header dengan back button
-                HStack {
-                    Button(action: {
-                        presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Image(systemName: "arrow.left")
-                            .font(.title2)
-                            .foregroundColor(.red)
-                    }
-                    Spacer()
-                    Text(viewModel.brand.name)
-                        .font(.title)
-                        .fontWeight(.bold)
-                    Spacer()
-                }
-                .padding()
-                
-                //Header
+                // Header Section
                 ZStack {
                     RoundedRectangle(cornerRadius: 10)
                         .fill(Color.white)
-//                        .opacity(0.1)
                         .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
-                    VStack(alignment: .leading, spacing: 20){
+                    VStack(alignment: .leading, spacing: 20) {
                         // Image Slider
                         ImageSlider(images: viewModel.brand.images, currentIndex: $viewModel.currentImageIndex)
                             .frame(height: 250)
-                        
+
                         // Flash Sale Schedule
                         VStack(alignment: .leading, spacing: 8) {
                             Text("FLASH SALE SCHEDULE")
                                 .font(.headline)
                                 .fontWeight(.bold)
-                            Text("Description. Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
+                            Text(brand.flashSaleSchedule)
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
                         }
@@ -55,52 +46,60 @@ struct BrandDetailView: View {
                         .padding(.bottom)
                     }
                 }
-                // Katalog Produk
-                HStack() {
+
+                // Product Catalog
+                HStack {
                     Spacer()
-                    
                     Text("KATALOG FLASH SALE")
                         .font(.headline)
                         .fontWeight(.bold)
-                        .padding(.horizontal)
-                    
                     Spacer()
                 }
-                
+                .padding(.horizontal)
+
                 ProductGrid(products: viewModel.brand.products)
                     .padding(.horizontal)
+
+                // Footer with Queue Count and Button
+                if !LoginViewModel.shared.isAdmin {
+                    HStack(spacing: 16) {
+                        // Queue Count
+                        Text("Jumlah Antrian: \(queueService.queueList.filter { $0.status.lowercased() == "queueing" }.count)")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(.red)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 5)
+                                    .stroke(Color.red, lineWidth: 1)
+                            )
+
+                        // Ambil Antrian Button
+                        Button(action: {
+                            isShowingQueue = true
+                        }) {
+                            Text("Ambil Antrian >")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundColor(.red)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .stroke(Color.red, lineWidth: 1)
+                                )
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 10)
+                    .background(Color.white)
+                }
             }
-            
-            // Footer dengan tombol
-            HStack(spacing: 16) {
-                // Tombol Jumlah Antrian
-                Text("Jumlah Antrian: 50")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(.red)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(
-                        RoundedRectangle(cornerRadius: 5)
-                            .stroke(Color.red, lineWidth: 1)
-                    )
-                
-                // Tombol Ambil Antrian
-                Text("Ambil Antrian >")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(.red)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(
-                        RoundedRectangle(cornerRadius: 5)
-                            .stroke(Color.red, lineWidth: 1)
-                    )
-            }
-            .padding(.horizontal, 16)
-            .padding(.top, 10)
-            .background(Color.white)
+            .padding(.bottom)
         }
+        .background(Color(.systemGroupedBackground))
+        .navigationTitle(brand.name)
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
@@ -112,25 +111,34 @@ struct BrandDetailView: View {
                 }
             }
         }
+        .navigationDestination(isPresented: $isShowingQueue) {
+            BrandQueueView()
+                .environmentObject(queueService)
+                .onAppear {
+                    print("Navigated to BrandQueueView")
+                }
+        }
+        .onAppear {
+            queueService.fetchQueue {
+                print("BrandDetailView queue fetch completed")
+            }
+        }
     }
 }
 
-// Preview
 struct BrandDetailView_Previews: PreviewProvider {
     static var previews: some View {
         let sampleBrand = BrandDetail(
-            name: "Brand X",
-            description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-            images: ["placeholder1", "placeholder2"],
+            name: "Skintific",
+            description: "Premium beauty products",
+            images: ["brand1", "brand2", "brand3"],
             flashSaleSchedule: "12:00 - 14:00",
             products: [
-                Product(name: "Produk A", description: "Deskripsi produk A", image: "product1"),
-                Product(name: "Produk B", description: "Deskripsi produk B", image: "product2"),
-                Product(name: "Produk C", description: "Deskripsi produk C", image: "product3"),
-                Product(name: "Produk D", description: "Deskripsi produk D", image: "product4")
+                Product(name: "Moisturizer", description: "Hydrating cream", image: "moisturizer"),
+                Product(name: "Serum", description: "Anti-aging serum", image: "serum")
             ]
         )
-        
-        BrandDetailView(viewModel: BrandDetailViewModel(brand: sampleBrand))
+        BrandDetailView(brand: sampleBrand)
+            .environmentObject(QueueService.shared)
     }
 }

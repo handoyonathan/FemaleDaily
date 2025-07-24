@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 class BrandDetailViewModel: ObservableObject {
     @Published var currentImageIndex = 0

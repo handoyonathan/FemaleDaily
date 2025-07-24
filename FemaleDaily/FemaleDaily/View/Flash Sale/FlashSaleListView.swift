@@ -11,6 +11,7 @@ struct FlashSaleListView: View {
     @ObservedObject var viewModel: FlashSaleViewModel
     @Binding var isShowingDetail: Bool
     @Binding var selectedBrandDetail: BrandDetail?
+    @EnvironmentObject var queueService: QueueService
     
     var body: some View {
         ScrollView {
@@ -22,7 +23,7 @@ struct FlashSaleListView: View {
                                 selectedBrandDetail = event.brandDetail
                                 isShowingDetail = true
                             }) {
-                                FlashSaleItemView(event: event)
+                                FlashSaleItemView(event: event, queueCount: queueService.queueList.filter { $0.status.lowercased() == "queueing" }.count)
                             }
                             .buttonStyle(PlainButtonStyle())
                         }
@@ -49,5 +50,6 @@ struct FlashSaleListView_Previews: PreviewProvider {
             isShowingDetail: $isShowing,
             selectedBrandDetail: $selectedBrand
         )
+        .environmentObject(QueueService.shared)
     }
 }

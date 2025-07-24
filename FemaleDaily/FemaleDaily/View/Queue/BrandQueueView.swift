@@ -1,6 +1,6 @@
 //
 //  BrandQueue.swift
-//  
+//
 //
 //  Created by Yonathan Handoyo on 21/07/25.
 //
@@ -11,11 +11,15 @@ import CloudKit
 import UserNotifications
 
 class LoginViewModel: ObservableObject {
+    static let shared = LoginViewModel()
+    
     @Published var isLoggedIn = false
     @Published var userName: String?
     @Published var errorMessage: String?
     @Published var isAdmin = false
-
+    
+    private init() {}
+    
     func login(email: String, password: String) {
         let emailLowercased = email.lowercased()
         if emailLowercased == password.lowercased(), (emailLowercased.hasPrefix("user") || emailLowercased.hasPrefix("admin")) {
@@ -30,15 +34,14 @@ class LoginViewModel: ObservableObject {
             self.isAdmin = false
             print("Login failed for: \(emailLowercased)")
         }
-    }
-}
+    }}
 
 
 struct LoginView: View {
-    @EnvironmentObject private var authViewModel: LoginViewModel
     @State private var email = ""
     @State private var password = ""
     @Environment(\.colorScheme) var colorScheme
+    @State private var isLoggedIn = false
 
     var body: some View {
         NavigationStack {
@@ -46,23 +49,26 @@ struct LoginView: View {
                 Text("Login to JxB")
                     .font(.title)
                     .fontWeight(.bold)
-
-                if let errorMessage = authViewModel.errorMessage {
+                
+                if let errorMessage = LoginViewModel.shared.errorMessage {
                     Text(errorMessage)
                         .foregroundColor(.red)
                         .font(.footnote)
                         .multilineTextAlignment(.center)
                 }
-
+                
                 TextField("Username", text: $email)
                     .textFieldStyle(.roundedBorder)
                     .autocapitalization(.none)
-
+                
                 SecureField("Password", text: $password)
                     .textFieldStyle(.roundedBorder)
-
+                
                 Button("Login") {
-                    authViewModel.login(email: email, password: password)
+                    LoginViewModel.shared.login(email: email, password: password)
+                    print("Login button pressed, isLoggedIn: \(LoginViewModel.shared.isLoggedIn), isAdmin: \(LoginViewModel.shared.isAdmin)")
+                    isLoggedIn = LoginViewModel.shared.isLoggedIn
+                    print("Set isLoggedIn to \(isLoggedIn)")
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
@@ -71,33 +77,29 @@ struct LoginView: View {
                 .cornerRadius(8)
             }
             .padding()
-            .navigationDestination(isPresented: $authViewModel.isLoggedIn) {
-                if authViewModel.isAdmin {
-                                    AdminView(authViewModel: authViewModel)
-                                        .environmentObject(authViewModel)
-                                } else {
-                                    HomeView()
-                                        .environmentObject(authViewModel)
-                                }
+            .navigationDestination(isPresented: $isLoggedIn) {
+                if LoginViewModel.shared.isAdmin {
+                    AdminView()
+                        .environmentObject(QueueService.shared)
+                        .onAppear {
+                            print("Navigated to AdminView")
+                        }
+                } else {
+                    FlashSaleView()
+                        .environmentObject(QueueService.shared)
+                        .onAppear {
+                            print("Navigated to FlashSaleView")
+                        }
+                }
             }
         }
     }
 }
 
-
-
-import SwiftUI
-import CloudKit
-
 struct BrandQueueView: View {
-    @StateObject private var viewModel: BrandQueueViewModel
-    @EnvironmentObject private var authViewModel: LoginViewModel
+    @EnvironmentObject private var queueService: QueueService
     @State private var isLoading = false
-
-    init(authViewModel: LoginViewModel) {
-        _viewModel = StateObject(wrappedValue: BrandQueueViewModel(authViewModel: authViewModel))
-    }
-
+    
     var body: some View {
         VStack(spacing: 0) {
             TabView {
@@ -107,29 +109,29 @@ struct BrandQueueView: View {
             }
             .frame(height: 200)
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
-
+            
             HStack {
                 Text("Queue")
                     .font(.headline)
                 Spacer()
-                Text("\(viewModel.queueList.count) org")
+                Text("\(queueService.queueList.count) org")
                     .foregroundColor(.gray)
                     .font(.subheadline)
             }
             .padding()
-
-            if let errorMessage = viewModel.errorMessage {
+            
+            if let errorMessage = queueService.errorMessage {
                 Text(errorMessage)
                     .foregroundColor(.red)
                     .font(.footnote)
                     .multilineTextAlignment(.center)
                     .padding()
             }
-
-            if isLoading && viewModel.queueList.isEmpty {
+            
+            if isLoading && queueService.queueList.isEmpty {
                 ProgressView()
                     .padding()
-            } else if viewModel.queueList.isEmpty {
+            } else if queueService.queueList.isEmpty {
                 Text("No Queue")
                     .font(.title3)
                     .foregroundColor(.gray)
@@ -137,11 +139,11 @@ struct BrandQueueView: View {
             } else {
                 ScrollView {
                     VStack(spacing: 8) {
-                        ForEach(viewModel.queueList) { entry in
-                            let isCurrentUser = entry.username == authViewModel.userName
+                        ForEach(queueService.queueList) { entry in
+                            let isCurrentUser = entry.username == LoginViewModel.shared.userName
                             let cardBackgroundColor = {
                                 if entry.status.lowercased() == "done" {
-                                    return Color.gray.opacity(0.3) // Gray for done entries
+                                    return Color.gray.opacity(0.3)
                                 } else if isCurrentUser {
                                     switch entry.status.lowercased() {
                                     case "queueing": return Color.orange.opacity(0.2)
@@ -171,27 +173,29 @@ struct BrandQueueView: View {
                         }
                     }
                     .padding()
-                    .onChange(of: viewModel.queueList) { newQueueList in
+                    .onChange(of: queueService.queueList) { newQueueList in
                         print("UI rendering queueList with \(newQueueList.count) entries: \(newQueueList.map { "\($0.number): \($0.username)" })")
-                        isLoading = false // Reset loading after queueList updates
+                        isLoading = false
                     }
                 }
             }
-
+            
             Spacer()
-
+            
             if !isCurrentUserDone {
                 VStack(spacing: 8) {
                     Button(isCurrentUserQueueing ? "Cancel Queue" : "Join Queue") {
-                        guard !isLoading else { return } // Prevent button spam
-                        isLoading = true // Show loading immediately
+                        guard !isLoading else { return }
+                        isLoading = true
                         if isCurrentUserQueueing {
-                            viewModel.cancelQueue {
+                            queueService.cancelQueue {
                                 print("Cancel queue completed, waiting for queueList update")
+                                isLoading = false
                             }
                         } else {
-                            viewModel.joinQueue(allowRejoin: true) {
+                            queueService.joinQueue(allowRejoin: true) {
                                 print("Join queue completed, waiting for queueList update")
+                                isLoading = false
                             }
                         }
                     }
@@ -200,8 +204,8 @@ struct BrandQueueView: View {
                     .padding()
                     .background(isCurrentUserQueueing ? Color.gray : Color.red)
                     .cornerRadius(10)
-                    .disabled(!authViewModel.isLoggedIn || isLoading)
-
+                    .disabled(!LoginViewModel.shared.isLoggedIn || isLoading)
+                    
                     Text("Disclaimer: After 3 missed calls, your turn will be passed.")
                         .font(.footnote)
                         .foregroundColor(.gray)
@@ -216,7 +220,7 @@ struct BrandQueueView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             isLoading = true
-            viewModel.fetchQueue {
+            queueService.fetchQueue {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     isLoading = false
                 }
@@ -225,79 +229,80 @@ struct BrandQueueView: View {
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("QueueUpdated"))) { _ in
             print("QueueUpdated notification received at \(Date().formatted())")
             isLoading = true
-            viewModel.fetchQueue {
-                print("fetchQueue completed after QueueUpdated, queueList count: \(viewModel.queueList.count)")
+            queueService.fetchQueue {
+                print("fetchQueue completed after QueueUpdated, queueList count: \(queueService.queueList.count)")
+                isLoading = false
             }
         }
     }
-
+    
     private var isCurrentUserDone: Bool {
-        guard let username = authViewModel.userName else { return false }
-        return viewModel.queueList.contains { $0.username == username && $0.status.lowercased() == "done" }
+        guard let username = LoginViewModel.shared.userName else { return false }
+        return queueService.queueList.contains { $0.username == username && $0.status.lowercased() == "done" }
     }
-
+    
     private var isCurrentUserQueueing: Bool {
-        guard let username = authViewModel.userName else { return false }
-        return viewModel.queueList.contains { $0.username == username && $0.status.lowercased() == "queueing" }
+        guard let username = LoginViewModel.shared.userName else { return false }
+        return queueService.queueList.contains { $0.username == username && $0.status.lowercased() == "queueing" }
     }
 }
 
-// Home View
-struct HomeView: View {
-    @EnvironmentObject private var authViewModel: LoginViewModel
-
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 20) {
-                Text("Welcome to JxB, \(authViewModel.userName ?? "User")!")
-                    .font(.title2)
-                NavigationLink("Go to Skintific Queue", destination: BrandQueueView(authViewModel: authViewModel))
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-            }
-            .navigationTitle("Home")
-        }
-    }
-}
+//// Home View
+//struct HomeView: View {
+//    @EnvironmentObject private var authViewModel: LoginViewModel
+//
+//    var body: some View {
+//        NavigationStack {
+//            VStack(spacing: 20) {
+//                Text("Welcome to JxB, \(authViewModel.userName ?? "User")!")
+//                    .font(.title2)
+//                NavigationLink("Go to Skintific Queue", destination: BrandQueueView(authViewModel: authViewModel))
+//                    .padding()
+//                    .background(Color.blue)
+//                    .foregroundColor(.white)
+//                    .cornerRadius(8)
+//            }
+//            .navigationTitle("Home")
+//        }
+//    }
+//}
 
 // AppDelegate untuk notifikasi CloudKit
-class AppDelegate: NSObject, UIApplicationDelegate {
-    
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
-            if let error = error {
-                print("Notification authorization failed: \(error.localizedDescription)")
-            } else {
-                print("Notification authorization granted: \(granted)")
-            }
-        }
-        UIApplication.shared.registerForRemoteNotifications()
-        return true
-    }
+//class AppDelegate: NSObject, UIApplicationDelegate {
+//    
+//    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+//        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
+//            if let error = error {
+//                print("Notification authorization failed: \(error.localizedDescription)")
+//            } else {
+//                print("Notification authorization granted: \(granted)")
+//            }
+//        }
+//        UIApplication.shared.registerForRemoteNotifications()
+//        return true
+//    }
+//    
+//    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+//        print("Registered for push notifications with token: \(deviceToken.map { String(format: "%02.2hhx", $0) }.joined())")
+//    }
+//    
+//    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+//        print("Failed to register for push notifications: \(error.localizedDescription)")
+//    }
+//    
+//    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+//        print("Received notification at \(Date().formatted()) with userInfo: \(userInfo)")
+//        if let notification = CKNotification(fromRemoteNotificationDictionary: userInfo) {
+//            print("Received CloudKit notification at \(Date().formatted()): \(notification)")
+//            NotificationCenter.default.post(name: NSNotification.Name("QueueUpdated"), object: nil)
+//            completionHandler(.newData)
+//        } else {
+//            print("Received non-CloudKit notification at \(Date().formatted())")
+//            completionHandler(.noData)
+//        }
+//    }
+//}
 
-    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        print("Registered for push notifications with token: \(deviceToken.map { String(format: "%02.2hhx", $0) }.joined())")
-    }
-
-    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        print("Failed to register for push notifications: \(error.localizedDescription)")
-    }
-
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        print("Received notification at \(Date().formatted()) with userInfo: \(userInfo)")
-        if let notification = CKNotification(fromRemoteNotificationDictionary: userInfo) {
-            print("Received CloudKit notification at \(Date().formatted()): \(notification)")
-            NotificationCenter.default.post(name: NSNotification.Name("QueueUpdated"), object: nil)
-            completionHandler(.newData)
-        } else {
-            print("Received non-CloudKit notification at \(Date().formatted())")
-            completionHandler(.noData)
-        }
-    }
-}
-//
 //
 //#Preview {
 //    LoginView()

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct FlashSaleItemView: View {
     let event: FlashSaleEvent
+    let queueCount: Int
+    @State private var isShowingBrandQueue = false
     
     var body: some View {
         HStack {
@@ -22,10 +24,6 @@ struct FlashSaleItemView: View {
                     Text(event.brandName)
                         .font(.headline)
                         .fontWeight(.bold)
-                    
-//                    Spacer()
-//
-//                    Image(systemName: "heart")
                 }
                 
                 Text(event.description)
@@ -33,25 +31,31 @@ struct FlashSaleItemView: View {
                     .foregroundColor(.gray)
                 
                 HStack {
-                    Text("Jumlah Antrian: 50")
-                        .font(.footnote)
-                        .fontWeight(.medium)
-                        .foregroundColor(.red)
-                        .padding(5)
-                        .background(
-                            RoundedRectangle(cornerRadius: 3)
-                                .stroke(Color.red, lineWidth: 0.7)
-                        )
+                    if !LoginViewModel.shared.isAdmin {
+                        Text("Jumlah Antrian: \(queueCount)")
+                            .font(.footnote)
+                            .fontWeight(.medium)
+                            .foregroundColor(.red)
+                            .padding(5)
+                            .background(
+                                RoundedRectangle(cornerRadius: 3)
+                                    .stroke(Color.red, lineWidth: 0.7)
+                            )
+                    }
                     
-                    Text("Ambil Antrian >")
-                        .font(.footnote)
-                        .fontWeight(.medium)
-                        .foregroundColor(.red)
-                        .padding(5)
-                        .background(
-                            RoundedRectangle(cornerRadius: 3)
-                                .stroke(Color.red, lineWidth: 0.7)
-                        )
+//                    Button(action: {
+//                        isShowingBrandQueue = true
+//                    }) {
+                        Text("Ambil Antrian >")
+                            .font(.footnote)
+                            .fontWeight(.medium)
+                            .foregroundColor(.red)
+                            .padding(5)
+                            .background(
+                                RoundedRectangle(cornerRadius: 3)
+                                    .stroke(Color.red, lineWidth: 0.7)
+                            )
+//                    }
                 }
             }
         }
@@ -60,12 +64,15 @@ struct FlashSaleItemView: View {
         .background(Color(.white))
         .cornerRadius(8)
         .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+        .navigationDestination(isPresented: $isShowingBrandQueue) {
+            BrandQueueView()
+                .environmentObject(QueueService.shared)
+                .navigationTitle("Brand Queue")
+        }
     }
 }
 
-// Preview
 #Preview {
-    // 1. Create sample brand detail
     let sampleBrandDetail = BrandDetail(
         name: "Brand X",
         description: "Premium beauty products with natural ingredients",
@@ -77,7 +84,6 @@ struct FlashSaleItemView: View {
         ]
     )
     
-    // 2. Create sample flash sale event
     let sampleEvent = FlashSaleEvent(
         brandName: "Brand X",
         description: "Special discount 50% for all products",
@@ -87,8 +93,8 @@ struct FlashSaleItemView: View {
         brandDetail: sampleBrandDetail
     )
     
-    // 3. Return the view with sample data
-    return FlashSaleItemView(event: sampleEvent)
+    FlashSaleItemView(event: sampleEvent, queueCount: 50)
         .padding()
-        .background(Color(.systemGray6)) // Background to see the shadow effect
+        .background(Color(.systemGray6))
+        .environmentObject(QueueService.shared)
 }

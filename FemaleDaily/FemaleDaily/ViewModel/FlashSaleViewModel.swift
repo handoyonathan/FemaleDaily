@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 class FlashSaleViewModel: ObservableObject {
     @Published var selectedDate: Date
@@ -46,5 +47,3 @@ extension FlashSaleViewModel {
         }
     }
 }
-
-
